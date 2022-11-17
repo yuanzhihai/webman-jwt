@@ -22,7 +22,7 @@ class JWTAuthMiddleware implements MiddlewareInterface
 
     public function process(Request $request,callable $next): Response
     {
-        $token = JWTUtil::handleToken( $request );
+        $token = JWTUtil::getToken( $request );
         if ($token !== false && $this->jwt->verifyToken( $token )) {
             return $next( $request );
         }

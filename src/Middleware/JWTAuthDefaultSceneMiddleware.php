@@ -20,7 +20,7 @@ class JWTAuthDefaultSceneMiddleware implements MiddlewareInterface
 
     public function process(Request $request,callable $next): Response
     {
-        $token = JWTUtil::handleToken( $request );
+        $token = JWTUtil::getToken( $request );
         if ($token !== false && $this->jwt->verifyTokenAndScene( 'default',$token )) {
             return $next( $request );
         }

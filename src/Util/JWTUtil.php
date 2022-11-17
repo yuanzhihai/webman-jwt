@@ -39,7 +39,7 @@ class JWTUtil
      */
     public static function getToken(Request $request)
     {
-        $authorization = $request->header( self::header ) ?: self::fromAltHeaders();
+        $authorization = $request->header( self::header ) ?: self::fromAltHeaders($request);
         $token         = self::handleToken( $authorization );
         return $token;
     }
@@ -51,8 +51,8 @@ class JWTUtil
      */
     public static function getParserData(Request $request)
     {
-        $authorization = $request->header( self::header ) ?: self::fromAltHeaders();
-        $token         = self::handleToken( $token );
+        $authorization = $request->header( self::header ) ?: self::fromAltHeaders($request);
+        $token         = self::handleToken( $authorization );
         return self::getParser()->parse( $token )->claims()->all();
     }
 
