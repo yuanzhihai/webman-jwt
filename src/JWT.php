@@ -22,7 +22,6 @@ use Lcobucci\JWT\Encoding\ChainedFormatter;
 use ReflectionClass;
 use support\Redis;
 use support\Request;
-use Webman\Config;
 use yzh52521\Jwt\Constant\JWTConstant;
 use yzh52521\Jwt\Exception\JWTException;
 use yzh52521\Jwt\Exception\TokenValidException;
@@ -54,16 +53,18 @@ class JWT extends AbstractJWT
     private $scene = 'default';
 
     /**
-     * @var Request|mixed
+     * @var Request
      */
     public $request;
 
     /**
-     * @var Config|mixed
+     * @var array
      */
     private $jwtConfig;
 
-
+    /**
+     * @var array
+     */
     protected $config = [];
 
     /**
@@ -74,7 +75,7 @@ class JWT extends AbstractJWT
 
     public function __construct()
     {
-        $config    = Config( 'plugin.yzh52521.jwt.app' );
+        $config    = config( 'plugin.yzh52521.jwt.app' );
         $jwtConfig = $config[JWTConstant::CONFIG_NAME];
         $scenes    = $jwtConfig['scene'];
         foreach ( $scenes as $key => $scene ) {
@@ -247,7 +248,7 @@ class JWT extends AbstractJWT
         if ($sceneConfig['blacklist_enabled']) {
             $claims     = $token->claims();
             $cacheKey   = $this->getCacheKey( $sceneConfig,$claims->get( RegisteredClaims::ID ) );
-            $cacheValue = unserialize(Redis::get($cacheKey));
+            $cacheValue = unserialize( Redis::get( $cacheKey ) );
             if ($sceneConfig['login_type'] == JWTConstant::MPOP) {
                 return !empty( $cacheValue['valid_until'] ) && !TimeUtil::isFuture( $cacheValue['valid_until'] );
             }
@@ -429,7 +430,7 @@ class JWT extends AbstractJWT
     /**
      * 获取缓存时间
      *
-     * @return mixed
+     * @return int
      */
     public function getCacheTTL(string $token = null): int
     {
@@ -441,7 +442,8 @@ class JWT extends AbstractJWT
         $claimJti    = $token->claims()->get( RegisteredClaims::ID );
         $sceneConfig = $this->getSceneConfigByToken( $token );
         $cacheKey    = $this->getCacheKey( $sceneConfig,$claimJti );
-        return Redis::get( $cacheKey );
+        $cacheValue  = unserialize( Redis::get( $cacheKey ) );
+        return $cacheValue['valid_until'];
     }
 
     public function getTTL(string $token): int
