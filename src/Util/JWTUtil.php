@@ -12,6 +12,15 @@ use support\Request;
 
 class JWTUtil
 {
+    const header = 'authorization';
+
+    const prefix = 'Bearer';
+
+    protected static function fromAltHeaders(Request $request)
+    {
+        return $request->header( 'HTTP_AUTHORIZATION' ) ?: $request->header( 'REDIRECT_HTTP_AUTHORIZATION' );
+    }
+
     /**
      * claims对象转换成数组
      *
@@ -30,8 +39,8 @@ class JWTUtil
      */
     public static function getToken(Request $request)
     {
-        $token = $request->header( 'Authorization' ) ?? '';
-        $token = self::handleToken( $token );
+        $authorization = $request->header( self::header ) ?: self::fromAltHeaders();
+        $token         = self::handleToken( $authorization );
         return $token;
     }
 
@@ -42,8 +51,8 @@ class JWTUtil
      */
     public static function getParserData(Request $request)
     {
-        $token = $request->header( 'Authorization' ) ?? '';
-        $token = self::handleToken( $token );
+        $authorization = $request->header( self::header ) ?: self::fromAltHeaders();
+        $token         = self::handleToken( $token );
         return self::getParser()->parse( $token )->claims()->all();
     }
 
@@ -53,12 +62,12 @@ class JWTUtil
      * @param string $prefix
      * @return bool|mixed|string
      */
-    public static function handleToken(string $token,string $prefix = 'Bearer')
+    public static function handleToken(string $token)
     {
         if (strlen( $token ) > 0) {
-            $token = ucfirst( $token );
-            $arr   = explode( "{$prefix} ",$token );
-            $token = $arr[1] ?? '';
+            $token  = ucfirst( $token );
+            $header = explode( self::prefix." ",$token );
+            $token  = $header[1] ?? '';
             if (strlen( $token ) > 0) {
                 return $token;
             }

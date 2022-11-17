@@ -20,10 +20,10 @@ use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use ReflectionClass;
-use support\Cache;
+use support\Redis;
 use support\Request;
 use Webman\Config;
-use yzh52521\jwt\Constant\JWTConstant;
+use yzh52521\Jwt\Constant\JWTConstant;
 use yzh52521\Jwt\Exception\JWTException;
 use yzh52521\Jwt\Exception\TokenValidException;
 use yzh52521\Jwt\Util\JWTUtil;
@@ -63,10 +63,8 @@ class JWT extends AbstractJWT
      */
     private $jwtConfig;
 
-    /**
-     * @var mixed|Cache
-     */
-    private $cache;
+
+    protected $config = [];
 
     /**
      * @var Configuration
@@ -76,17 +74,14 @@ class JWT extends AbstractJWT
 
     public function __construct()
     {
-        $config    = config( 'plugin.yzh52521.jwt.app' );
-        $jwtConfig = $config->get( JWTConstant::CONFIG_NAME,[] );
+        $config    = Config( 'plugin.yzh52521.jwt.app' );
+        $jwtConfig = $config[JWTConstant::CONFIG_NAME];
         $scenes    = $jwtConfig['scene'];
         foreach ( $scenes as $key => $scene ) {
-            $sceneConfig    = array_merge( $jwtConfig,$scene );
-            $sceneConfigKey = JWTConstant::CONFIG_NAME.'.'.$key;
-            $config->set( $sceneConfigKey,$sceneConfig );
+            $sceneConfig        = array_merge( $jwtConfig,$scene );
+            $this->config[$key] = $sceneConfig;
         }
-
-        $this->jwtConfig = $config->get( JWTConstant::CONFIG_NAME,[] );
-        $this->cache     = Cache::class;
+        $this->jwtConfig = $this->config;
         $this->request   = Request::class;
     }
 
@@ -252,7 +247,7 @@ class JWT extends AbstractJWT
         if ($sceneConfig['blacklist_enabled']) {
             $claims     = $token->claims();
             $cacheKey   = $this->getCacheKey( $sceneConfig,$claims->get( RegisteredClaims::ID ) );
-            $cacheValue = $this->cache->get( $cacheKey );
+            $cacheValue = unserialize(Redis::get($cacheKey));
             if ($sceneConfig['login_type'] == JWTConstant::MPOP) {
                 return !empty( $cacheValue['valid_until'] ) && !TimeUtil::isFuture( $cacheValue['valid_until'] );
             }
@@ -301,11 +296,7 @@ class JWT extends AbstractJWT
              */
             $tokenCacheTime = $this->getTokenCacheTime( $claims );
             if ($tokenCacheTime > 0) {
-                return $this->cache->set(
-                    $cacheKey,
-                    ['valid_until' => $validUntil],
-                    $tokenCacheTime
-                );
+                return Redis::setEx( $cacheKey,$tokenCacheTime,serialize( ['valid_until' => $validUntil] ) );
             }
         }
         return false;
@@ -450,7 +441,7 @@ class JWT extends AbstractJWT
         $claimJti    = $token->claims()->get( RegisteredClaims::ID );
         $sceneConfig = $this->getSceneConfigByToken( $token );
         $cacheKey    = $this->getCacheKey( $sceneConfig,$claimJti );
-        return $this->cache->get( $cacheKey );
+        return Redis::get( $cacheKey );
     }
 
     public function getTTL(string $token): int
