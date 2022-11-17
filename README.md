@@ -329,7 +329,7 @@ class IndexController
      */
     public function refreshDefaultToken(Request $request)
     {
-        $token = $this->jwt->refreshToken(JWTUtil::getToken($request));
+        $token = $this->jwt->refreshToken();
         $data = [
             'code' => 0,
             'msg' => 'success',
@@ -347,7 +347,7 @@ class IndexController
      */
     public function refreshAppToken(Request $request)
     {
-        $token = $this->jwt->refreshToken(JWTUtil::getToken($request));
+        $token = $this->jwt->refreshToken();
         $data = [
             'code' => 0,
             'msg' => 'success',

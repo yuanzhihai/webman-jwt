@@ -83,7 +83,7 @@ class JWT extends AbstractJWT
             $this->config[$key] = $sceneConfig;
         }
         $this->jwtConfig = $this->config;
-        $this->request   = Request::class;
+        $this->request   = \request();
     }
 
     /**
@@ -439,7 +439,7 @@ class JWT extends AbstractJWT
         $sceneConfig = $this->getSceneConfigByToken( $token );
         $cacheKey    = $this->getCacheKey( $sceneConfig,$claimJti );
         $cacheValue  = unserialize( Redis::get( $cacheKey ) );
-        return $cacheValue['valid_until'];
+        return $cacheValue['valid_until'] - time();
     }
 
     public function getTTL(string $token): int
