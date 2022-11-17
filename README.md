@@ -200,7 +200,7 @@ Authorization  Bearer token
 
 ##### 结果
 
-###### 请求：http://{your ip}:8787/login，下面是返回的结果
+###### 请求：http://0.0.0.0:8787/login，下面是返回的结果
 
 ```shell
 {
@@ -212,7 +212,7 @@ Authorization  Bearer token
 }
 ```
 
-###### 请求：http://{your ip}:8787/v1/getToken
+###### 请求：http://0.0.0.0:8787/v1/getToken
 
 ```shell
 {
@@ -251,12 +251,11 @@ class IndexController
         $this->jwt =JWT::class;
     }
 
-  
 
     /**
      * 模拟登录 default场景
      */
-    public function loginDefault(Request $request)
+    public function login(Request $request)
     {
         $username = $request->input('username');
         $password = $request->input('password');
@@ -293,13 +292,13 @@ class IndexController
                 'username' => 'xx',
             ];
             // 使用application2场景登录
-            $token1 = $this->jwt->getToken('application1', $userData1);
+            $token1 = $this->jwt->getToken('app', $userData1);
             $userData2 = [
                 'uid' => 2, // 如果使用单点登录，必须存在配置文件中的sso_key的值，一般设置为用户的id
                 'username' => 'xx',
             ];
             // 使用application2场景登录
-            $token2 = $this->jwt->getToken('application1', $userData2);
+            $token2 = $this->jwt->getToken('app', $userData2);
             $data = [
                 'code' => 0,
                 'msg' => 'success',
@@ -418,16 +417,16 @@ class IndexController
 
 ```
 
-##### 11、获取解析后的 token 数据
+##### 获取解析后的 token 数据
 
 提供了一个 `getParserData` 来获取解析后的 token 数据。
 例如：`JWTUtil::getParserData($this->request)`
 
-##### 12、如何支持每个场景生成的token不能互相访问各个应用
+##### 如何支持每个场景生成的token不能互相访问各个应用
 
 具体你可以查看yzh52521\Jwt\Middleware\JWTAuthSceneDefaultMiddleware和yzh52521\Jwt\Middleware\JWTAuthSceneAppMiddleware这两个中间件，根据这两个中间件你可以编写自己的中间件来支持每个场景生成的token不能互相访问各个应用
 
-##### 13、建议
+##### 建议
 
 > 目前 `jwt` 抛出的异常目前有两种类型
 > `yzh52521\Jwt\Exception\TokenValidException`、    
