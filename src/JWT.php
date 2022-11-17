@@ -83,7 +83,7 @@ class JWT extends AbstractJWT
             $this->config[$key] = $sceneConfig;
         }
         $this->jwtConfig = $this->config;
-        $this->request   = \request();
+        $this->request   = request();
     }
 
     /**
