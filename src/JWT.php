@@ -238,9 +238,8 @@ class JWT extends AbstractJWT
     /**
      * 判断token是否已经加入黑名单
      *
-     * @param $claims
+     * @param Plain $claims
      * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function hasTokenBlack(Plain $token): bool
     {
@@ -269,10 +268,9 @@ class JWT extends AbstractJWT
     /**
      * 把token加入到黑名单中
      *
-     * @param Token $token
+     * @param Plain $token
      * @param bool $addByCreateTokenMethod
-     * @return mixed
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @return bool
      */
     public function addTokenBlack(Plain $token,bool $addByCreateTokenMethod = false): bool
     {
@@ -327,7 +325,6 @@ class JWT extends AbstractJWT
      * 刷新token
      *
      * @return Token
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function refreshToken(string $token = null): Plain
     {
@@ -356,7 +353,6 @@ class JWT extends AbstractJWT
      *
      * @param string|null $token
      * @return bool
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function logout(string $token = null): bool
     {
