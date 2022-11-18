@@ -64,11 +64,6 @@ class JWT extends AbstractJWT
     private $jwtConfig;
 
     /**
-     * @var array
-     */
-    protected $config = [];
-
-    /**
      * @var Configuration
      */
     private $lcobucciJwtConfiguration;
@@ -80,11 +75,10 @@ class JWT extends AbstractJWT
         $jwtConfig = $config[JWTConstant::CONFIG_NAME];
         $scenes    = $jwtConfig['scene'];
         foreach ( $scenes as $key => $scene ) {
-            $sceneConfig        = array_merge( $jwtConfig,$scene );
-            $this->config[$key] = $sceneConfig;
+            $sceneConfig           = array_merge( $jwtConfig,$scene );
+            $this->jwtConfig[$key] = $sceneConfig;
         }
-        $this->jwtConfig = $this->config;
-        $this->request   = request();
+        $this->request = request();
     }
 
     /**
@@ -363,6 +357,31 @@ class JWT extends AbstractJWT
 
         $token = $this->tokenToPlain( $token );
         return $this->addTokenBlack( $token );
+    }
+
+    /**
+     * 黑名单移除token
+     * @param string $token
+     * @return int
+     */
+    public function remove(string $token): int
+    {
+        $token       = $this->tokenToPlain( $token );
+        $sceneConfig = $this->getSceneConfigByToken( $token );
+        $claims      = $token->claims();
+        $cacheKey    = $this->getCacheKey( $sceneConfig,$claims->get( RegisteredClaims::ID ) );
+        return Redis::del( $cacheKey );
+    }
+
+    /**
+     * 移除所有的token缓存
+     * @return int
+     */
+    public function clear(): int
+    {
+        $sceneConfig = $this->jwtConfig[$this->getScene()];
+        $keys        = Redis::keys( "{$sceneConfig['cache_prefix']}:*" );
+        return Redis::del( $keys );
     }
 
     /**
