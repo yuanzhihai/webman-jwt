@@ -475,7 +475,7 @@ class JWT extends AbstractJWT
         if ($jwtSceneConfig['user_model']) {
             return ( new User( $jwtSceneConfig['user_model'] ) )->get( $token->claims()->get( $jwtSceneConfig['sso_key'] ) );
         }
-        throw new TokenValidException( 'jwt.user_model required',500 );
+        throw new JWTException( 'jwt.user_model required',400 );
     }
 
     /**

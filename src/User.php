@@ -18,7 +18,7 @@ class User
         if ($class instanceof AuthorizationUserInterface) {
             $this->model = $class;
         } else {
-            throw new JWTException( 'must be implements yzh52521\Jwt\User\AuthorizationUserInterface',500 );
+            throw new JWTException( 'must be implements yzh52521\Jwt\User\AuthorizationUserInterface',400 );
         }
     }
 
