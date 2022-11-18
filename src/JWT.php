@@ -242,7 +242,11 @@ class JWT extends AbstractJWT
         if ($sceneConfig['blacklist_enabled']) {
             $claims     = $token->claims();
             $cacheKey   = $this->getCacheKey( $sceneConfig,$claims->get( RegisteredClaims::ID ) );
-            $cacheValue = unserialize( Redis::get( $cacheKey ) );
+            $cacheValue = Redis::get( $cacheKey );
+            if ($cacheValue == null) {
+                return true;
+            }
+            $cacheValue = unserialize( $cacheValue );
             if ($sceneConfig['login_type'] == JWTConstant::MPOP) {
                 return !empty( $cacheValue['valid_until'] ) && !TimeUtil::isFuture( $cacheValue['valid_until'] );
             }
@@ -362,9 +366,9 @@ class JWT extends AbstractJWT
     /**
      * 黑名单移除token
      * @param string $token
-     * @return int
+     * @return int|bool
      */
-    public function remove(string $token): int
+    public function remove(string $token)
     {
         $token       = $this->tokenToPlain( $token );
         $sceneConfig = $this->getSceneConfigByToken( $token );
@@ -375,9 +379,9 @@ class JWT extends AbstractJWT
 
     /**
      * 移除所有的token缓存
-     * @return int
+     * @return int|bool
      */
-    public function clear(): int
+    public function clear()
     {
         $sceneConfig = $this->jwtConfig[$this->getScene()];
         $keys        = Redis::keys( "{$sceneConfig['cache_prefix']}:*" );
