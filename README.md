@@ -287,31 +287,21 @@ class IndexController
         $username = $request->input('username');
         $password = $request->input('password');
         if ($username && $password) {
-            $userData1 = [
+            $userData = [
                 'uid' => 1, // 如果使用单点登录，必须存在配置文件中的sso_key的值，一般设置为用户的id
                 'username' => 'xx',
             ];
             // 使用application2场景登录
-            $token1 = $this->jwt->getToken('app', $userData1);
-            $userData2 = [
-                'uid' => 2, // 如果使用单点登录，必须存在配置文件中的sso_key的值，一般设置为用户的id
-                'username' => 'xx',
-            ];
-            // 使用application2场景登录
-            $token2 = $this->jwt->getToken('app', $userData2);
+            $token = $this->jwt->getToken('app', $userData);
+          
             $data = [
                 'code' => 0,
                 'msg' => 'success',
                 'data' => [
                     [
-                        'token' => $token1->toString(),
+                        'token' => $token->toString(),
                         'exp' => $this->jwt->getTTL($token1->toString()),
-                        'dynamic_exp' => $this->jwt->getTokenDynamicCacheTime($token1->toString())
-                    ],
-                    [
-                        'token' => $token2->toString(),
-                        'exp' => $this->jwt->getTTL($token2->toString()),
-                        'dynamic_exp' => $this->jwt->getTokenDynamicCacheTime($token2->toString())
+                        'dynamic_exp' => $this->jwt->getTokenDynamicCacheTime($token->toString())
                     ]
                 ]
             ];
@@ -370,10 +360,10 @@ class IndexController
     }
 
     /**
-     * application 场景的删除token
+     * app 场景的删除token
      *
      */
-    public function logout_application()
+    public function logout_app()
     {
         return $this->jwt->logout();
     }

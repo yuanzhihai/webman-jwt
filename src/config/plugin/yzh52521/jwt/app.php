@@ -64,17 +64,20 @@ return [
                 'login_type' => 'mpop', //  登录方式，sso为单点登录，mpop为多点登录
                 'sso_key'    => 'uid',
                 'ttl'        => 7200, // token过期时间，单位为秒
+                'user_model' => '', //用户模型
             ],
             'app1'    => [
                 'secret'     => 'app1', // 非对称加密使用字符串,请使用自己加密的字符串
                 'login_type' => 'sso', //  登录方式，sso为单点登录，mpop为多点登录
                 'sso_key'    => 'uid',
                 'ttl'        => 7200, // token过期时间，单位为秒
+                'user_model' => '', //用户模型
             ],
             'app2'    => [
                 'secret'     => 'app2', // 非对称加密使用字符串,请使用自己加密的字符串
                 'login_type' => 'mpop', //  登录方式，sso为单点登录，mpop为多点登录
                 'ttl'        => 7200, // token过期时间，单位为秒
+                'user_model' => '', //用户模型
             ]
         ]
 

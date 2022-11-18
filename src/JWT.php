@@ -25,6 +25,7 @@ use support\Request;
 use yzh52521\Jwt\Constant\JWTConstant;
 use yzh52521\Jwt\Exception\JWTException;
 use yzh52521\Jwt\Exception\TokenValidException;
+use yzh52521\Jwt\User\AuthorizationUserInterface;
 use yzh52521\Jwt\Util\JWTUtil;
 use yzh52521\Jwt\Util\TimeUtil;
 
@@ -461,6 +462,20 @@ class JWT extends AbstractJWT
         $token = $this->tokenToPlain( $token );
         $scene = $this->getSceneByTokenPlain( $token );
         return $this->jwtConfig[$scene];
+    }
+
+    /**
+     * 获取登录用户对象
+     */
+    public function getUser(): AuthorizationUserInterface
+    {
+        $token          = JWTUtil::getToken( $this->request );
+        $token          = $this->tokenToPlain( $token );
+        $jwtSceneConfig = $this->getJwtSceneConfig();
+        if ($jwtSceneConfig['user_model']) {
+            return ( new User( $jwtSceneConfig['user_model'] ) )->get( $token->claims()->get( $jwtSceneConfig['sso_key'] ) );
+        }
+        throw new TokenValidException( 'jwt.user_model required',500 );
     }
 
     /**

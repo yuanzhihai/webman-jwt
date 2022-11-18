@@ -22,6 +22,8 @@ class JWTAuthAppSceneMiddleware implements MiddlewareInterface
     {
         $token = JWTUtil::getToken( $request );
         if ($token !== false && $this->jwt->verifyTokenAndScene( 'app',$token )) {
+            $jwtConfig = $this->jwt->getJwtSceneConfig();
+            $jwtConfig['user_model'] && $request->user = $this->jwt->getUser();
             return $next( $request );
         }
 
