@@ -12,12 +12,8 @@ use yzh52521\Jwt\Util\JWTUtil;
 class JWTAuthMiddleware implements MiddlewareInterface
 {
 
-
-    protected $jwt;
-
-    public function __construct(JWT $jwt)
+    public function __construct(protected JWT $jwt)
     {
-        $this->jwt = $jwt;
     }
 
     public function process(Request $request,callable $next): Response
