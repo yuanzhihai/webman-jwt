@@ -428,7 +428,11 @@ class JWT extends AbstractJWT
             $token = JWTUtil::getToken( $this->request );
         }
 
-        return JWTUtil::getParser()->parse( $token );
+        try {
+            return JWTUtil::getParser()->parse( $token );
+        }catch (JWTException $e){
+            throw new JWTException('Jwt token interpretation error. Please provide the correct jwt token and parse the error information: ' . $e->getMessage(), 400);
+        }
     }
 
     public function setScene(string $scene = 'default'): JWT
