@@ -89,7 +89,10 @@ class JWT extends AbstractJWT
     {
         $this->setScene( $scene );
         $jwtSceneConfig = $this->getJwtSceneConfig( $scene );
-        $useAlgsClass   = $this->supportAlgs[$jwtSceneConfig['alg']];
+        if (empty( $jwtSceneConfig )) {
+            throw new JWTException( "The jwt scene [{$this->getScene()}] not found",400 );
+        }
+        $useAlgsClass = $this->supportAlgs[$jwtSceneConfig['alg']];
         if (!$this->isAsymmetric()) {
             $this->lcobucciJwtConfiguration = Configuration::forSymmetricSigner(
                 new $useAlgsClass(),
@@ -430,8 +433,8 @@ class JWT extends AbstractJWT
 
         try {
             return JWTUtil::getParser()->parse( $token );
-        }catch (JWTException $e){
-            throw new JWTException('Jwt token interpretation error. Please provide the correct jwt token and parse the error information: ' . $e->getMessage(), 400);
+        } catch ( JWTException $e ) {
+            throw new JWTException( 'Jwt token interpretation error. Please provide the correct jwt token and parse the error information: '.$e->getMessage(),400 );
         }
     }
 
