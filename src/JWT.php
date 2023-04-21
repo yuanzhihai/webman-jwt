@@ -92,19 +92,7 @@ class JWT extends AbstractJWT
         if (empty( $jwtSceneConfig )) {
             throw new JWTException( "The jwt scene [{$this->getScene()}] not found",400 );
         }
-        $useAlgsClass = $this->supportAlgs[$jwtSceneConfig['alg']];
-        if (!$this->isAsymmetric()) {
-            $this->lcobucciJwtConfiguration = Configuration::forSymmetricSigner(
-                new $useAlgsClass(),
-                InMemory::base64Encoded( base64_encode( $jwtSceneConfig['secret'] ) )
-            );
-        } else {
-            $this->lcobucciJwtConfiguration = Configuration::forAsymmetricSigner(
-                new $useAlgsClass(),
-                InMemory::file( $jwtSceneConfig['keys']['private'],$jwtSceneConfig['keys']['passphrase'] ),
-                InMemory::file( $jwtSceneConfig['keys']['public'] )
-            );
-        }
+        $this->buildConfig();
         return $this;
     }
 
@@ -522,6 +510,23 @@ class JWT extends AbstractJWT
         }
 
         return new $this->supportAlgs[$alg];
+    }
+
+    protected function buildConfig(): Configuration
+    {
+        $jwtSceneConfig = $this->getJwtSceneConfig();
+        if (!$this->isAsymmetric()) {
+            $this->lcobucciJwtConfiguration = Configuration::forSymmetricSigner(
+                $this->getSigner(),
+                InMemory::base64Encoded( base64_encode( $jwtSceneConfig['secret'] ) )
+            );
+        } else {
+            $this->lcobucciJwtConfiguration = Configuration::forAsymmetricSigner(
+                $this->getSigner(),
+                InMemory::file( $jwtSceneConfig['keys']['private'],$jwtSceneConfig['keys']['passphrase'] ),
+                InMemory::file( $jwtSceneConfig['keys']['public'] )
+            );
+        }
     }
 
     /**
