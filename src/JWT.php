@@ -529,9 +529,8 @@ class JWT extends AbstractJWT
      */
     protected function isAsymmetric(): bool
     {
-        $reflect = new ReflectionClass( $this->getSigner() );
-
-        return $reflect->isSubclassOf( Signer\Rsa::class ) || $reflect->isSubclassOf( Signer\Ecdsa::class );
+        return is_subclass_of( $this->getSigner(),Signer\Rsa::class )
+            || is_subclass_of( $this->getSigner(),Signer\Ecdsa::class );
     }
 
     /**
