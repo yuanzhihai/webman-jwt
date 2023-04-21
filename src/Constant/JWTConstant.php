@@ -1,7 +1,7 @@
 <?php
 declare( strict_types = 1 );
 
-namespace yzh52521\jwt\Constant;
+namespace yzh52521\Jwt\Constant;
 
 interface JWTConstant
 {
