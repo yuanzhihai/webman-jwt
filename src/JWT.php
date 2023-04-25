@@ -157,7 +157,7 @@ class JWT extends AbstractJWT
 
         $token = $builder->getToken( $this->lcobucciJwtConfiguration->signer(),$this->lcobucciJwtConfiguration->signingKey() );
         if ($loginType == JWTConstant::SSO) {
-            $this->addTokenBlack( $token,true );
+            $this->addTokenBlack( $token );
         }
         return $token;
     }
@@ -259,10 +259,9 @@ class JWT extends AbstractJWT
      * 把token加入到黑名单中
      *
      * @param Plain $token
-     * @param bool $addByCreateTokenMethod
      * @return bool
      */
-    public function addTokenBlack(Plain $token,bool $addByCreateTokenMethod = false): bool
+    public function addTokenBlack(Plain $token): bool
     {
         $sceneConfig = $this->getSceneConfigByToken( $token );
         $claims      = $token->claims();
