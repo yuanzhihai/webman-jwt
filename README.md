@@ -74,7 +74,7 @@ return [
     'cache_prefix' => 'yzh52521:jwt',
 
     /**
-     * 是否开启黑名单，单点登录和多点登录的注销、刷新使原token失效，必须要开启黑名单，目前黑名单缓存只支持hyperf缓存驱动
+     * 是否开启黑名单，单点登录和多点登录的注销、刷新使原token失效，必须要开启黑名单，目前黑名单缓存只支持webman缓存驱动
      */
     'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', true),
 
