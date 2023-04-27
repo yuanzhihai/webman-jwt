@@ -511,7 +511,7 @@ class JWT extends AbstractJWT
         return new $this->supportAlgs[$alg];
     }
 
-    protected function buildConfig(): Configuration
+    protected function buildConfig()
     {
         $jwtSceneConfig = $this->getJwtSceneConfig();
         if (!$this->isAsymmetric()) {
